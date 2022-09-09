@@ -1,7 +1,7 @@
 add_rules("mode.debug", "mode.release")
-add_requires("opencv")
+add_requires("opencv","glm")
 set_languages("c17", "c++20")
-add_packages("opencv")
+add_packages("opencv","glm")
 
 if is_plat("windows") then
     add_defines("PF_WIN32")
@@ -18,6 +18,7 @@ end
 
 example("show_img")
 example("show_video")
+example("knob_cut_img")
 
 --
 -- If you want to known more usage about xmake, please see https://xmake.io
