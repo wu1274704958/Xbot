@@ -22,7 +22,8 @@ int main(int argc, char** argv)
     glm::vec2 offset(-200,-200);
     std::string name = "img_turntable";
     const char* path = "C:\\Users\\Administrator\\Pictures\\dra.png";
-    if(argc > 1) path = argv[1];
+    if(argc >= 2) path = argv[1];
+    if(argc >= 3) name = argv[2];
     cv::Mat img = cv::imread(path,-1);
     if (img.empty()) return  -1;
     cv::namedWindow("example1", cv::WINDOW_AUTOSIZE);
