@@ -2,7 +2,17 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/functions.hpp>
-#include <format>
+#include <gflags/gflags.h>
+
+DEFINE_string(img,"C:\\Users\\Administrator\\Pictures\\dra.png","Input Image");
+DEFINE_string(name,"img_turntable","Out Image name prefix");
+DEFINE_bool(draw,false,"If TRUE only draw not output any Images");
+DEFINE_int32(offx,0,"Offset X");
+DEFINE_int32(offy,0,"Offset Y");
+DEFINE_int32(cr,310,"Center of circle radius");
+DEFINE_int32(r,230,"Radius of outer circle");
+DEFINE_int32(a,60,"Angle");
+DEFINE_int32(n,3,"Unit num");
 
 std::string dir = "save";
 static bool OnlyDraw = false;
@@ -15,16 +25,14 @@ cv::Mat cut_center(glm::vec2 o, const cv::Mat& mat, float r);
 
 int main(int argc, char** argv)
 {
-    float angle = 60;
-    int n = 3;
-    float circleR = 310 * 0.5f;
-    float r = 230 * 0.5f;
-    glm::vec2 offset(-200,-200);
-    std::string name = "img_turntable";
-    const char* path = "C:\\Users\\Administrator\\Pictures\\dra.png";
-    if(argc >= 2) path = argv[1];
-    if(argc >= 3) name = argv[2];
-    cv::Mat img = cv::imread(path,-1);
+    google::ParseCommandLineFlags(&argc,&argv,true);
+    OnlyDraw = FLAGS_draw;
+    glm::vec2 offset(FLAGS_offx,FLAGS_offy);
+    float angle = static_cast<float>(FLAGS_a);
+    float circleR = static_cast<float>(FLAGS_cr) * 0.5f;
+    float r = static_cast<float>(FLAGS_r) * 0.5f;
+    int n = FLAGS_n; 
+    cv::Mat img = cv::imread(FLAGS_img,-1);
     if (img.empty()) return  -1;
     cv::namedWindow("example1", cv::WINDOW_AUTOSIZE);
     int idx = 1;
@@ -52,13 +60,13 @@ int main(int argc, char** argv)
             cv::imshow("example1",dst);
             cv::waitKey();
         }
-        save_imgs(dir,name,idx,res);
+        save_imgs(dir,FLAGS_name,idx,res);
         rot -= angle;
         idx += 1;
     }
     if(!OnlyDraw)
     {
-        auto path = name += "_0.png";
+        auto path = FLAGS_name += "_0.png";
         cv::imwrite(path.c_str(),center_img );
     }
     cv::destroyWindow("example1");

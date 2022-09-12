@@ -1,7 +1,7 @@
 add_rules("mode.debug", "mode.release")
-add_requires("opencv","glm")
+add_requires("opencv","glm","gflags")
 set_languages("c17", "c++20")
-add_packages("opencv","glm")
+add_packages("opencv","glm","gflags")
 
 if is_plat("windows") then
     add_defines("PF_WIN32")
