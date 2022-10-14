@@ -17,7 +17,7 @@ DEFINE_int32(n,3,"Unit num");
 std::string dir = "save";
 static bool OnlyDraw = false;
 
-std::vector<cv::Mat> cut(float angle, int n, float circle_r, float r,glm::vec2 offset, const cv::Mat& mat);
+std::vector<cv::Mat> cut(float angle, int n, float circle_r, float r,glm::vec2 offset, const cv::Mat& mat,bool print = false);
 
 void save_imgs(const std::string& dir, const std::string& name, int idx,std::vector<cv::Mat> imgs);
 
@@ -54,7 +54,7 @@ int main(int argc, char** argv)
             cv::warpAffine(img,dst,rot_mat,cv::Size(img.size[1] , img.size[0]));           
         }
         else dst = img;
-        std::vector<cv::Mat> res = cut(angle,n,circleR,r,offset,dst);
+        std::vector<cv::Mat> res = cut(angle,n,circleR,r,offset,dst,i == 0);
         if(OnlyDraw)
         {
             cv::imshow("example1",dst);
@@ -85,7 +85,7 @@ std::tuple<glm::vec2,glm::vec2,glm::vec2> calcInter(glm::vec2 vec, float radius,
 
 std::tuple<glm::vec2,glm::vec2,glm::vec2,glm::vec2> calcBound(glm::vec2 o, float br, float er, float angle);
 
-std::vector<cv::Mat> cut(float angle, int n, float circle_r, float r,glm::vec2 offset, const cv::Mat& mat)
+std::vector<cv::Mat> cut(float angle, int n, float circle_r, float r,glm::vec2 offset, const cv::Mat& mat,bool print)
 {
     std::vector<cv::Mat> res;
     float radius = circle_r;
@@ -97,7 +97,7 @@ std::vector<cv::Mat> cut(float angle, int n, float circle_r, float r,glm::vec2 o
         auto bottomR = radius + r;
         auto[lt,rt,lb,rb] = calcBound(o,radius,bottomR,angle);
         auto len = (lt.y - o.y) + ((lb.y - lt.y) / 2);
-        printf("%f\n",len);
+        if(print)printf("offset = %f width = %f height = %f\n",len,ceilf(rt.x - lt.x),ceilf(lb.y - lt.y));
         if(OnlyDraw)
         {
             cv::rectangle(mat,cv::Point(lt.x,lt.y),cv::Point(rb.x,rb.y),CV_RGB(255,0,0));
