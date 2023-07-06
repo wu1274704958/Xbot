@@ -2,3 +2,4 @@
 /build/**
 /vsxmake*/**
 /.idea/**
+/cmake-build-debug-*/**
