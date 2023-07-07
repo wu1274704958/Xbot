@@ -14,9 +14,25 @@ int main(int argc, char** argv)
     std::vector<cv::Mat> channels;
     cv::split(img, channels);
     // 使用 Alpha 通道作为灰度图像的灰度值
-    cv::Mat grayImage = channels[3];
+    const cv::Mat& grayImage = channels[3];
 
-    GenerateSdf(edgeImg);
+    cv::Mat depthImg(grayImage.size(),CV_16UC1);
+
+    auto sdf = GenerateSdf(edgeImg);
+
+    for (int i = 0; i < depthImg.rows; i++)
+    {
+        for (int j = 0; j < depthImg.cols; j++)
+        {
+            depthImg.at<uint16_t>(i,j) =
+                    static_cast<uint16_t>(static_cast<double>(std::numeric_limits<uint16_t>::max()) * (static_cast<double>(grayImage.at<uchar>(i,j)) / 255.0));
+        }
+    }
+
+    cv::imwrite("depth.png",depthImg);
+    cv::imwrite("sdf.png",sdf);
+
+    return 0;
 
 //    cv::Mat distShow;
 //    distShow = cv::Mat::zeros(edgeGrayImage.size(), CV_8UC1);
@@ -29,10 +45,12 @@ int main(int argc, char** argv)
 //        }
 //    }
 //    cv::normalize(distShow, distShow, 0, 255, CV_MINMAX); //为了显示清晰，做了0~255归一化
-
-
+    cv::Mat mixArray[2] = { depthImg,sdf };
+    cv::Mat output(depthImg.size(),CV_16UC2);
+    int formTo[4] = {0,0,0,1};
+    cv::mixChannels(mixArray, 2,&output,1,formTo,2);
 	cv::namedWindow("example1", cv::WINDOW_AUTOSIZE);
-	//cv::imshow("example1", distShow);
+	cv::imshow("example1", sdf);
 	cv::waitKey(0);
 	double ret = -1.0;
 	if ((ret = cv::getWindowProperty("example1", 0)) != -1.0)
