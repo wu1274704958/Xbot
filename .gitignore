@@ -3,3 +3,4 @@
 /vsxmake*/**
 /.idea/**
 /cmake-build-debug-*/**
+/*.png
